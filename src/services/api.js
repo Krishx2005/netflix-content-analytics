@@ -1,26 +1,25 @@
-const IS_PROD = import.meta.env.PROD;
-const API_BASE = '/api';
-const DATA_BASE = '/data';
+// Use VITE_API_URL if set (production pointing to Render backend),
+// otherwise fall back to local proxy in development.
+const API_BASE = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api';
 
 async function fetchApi(endpoint, params = {}) {
-  if (IS_PROD) {
-    // In production, fetch pre-built static JSON
-    const name = endpoint.replace('/', '');
-    const response = await fetch(`${DATA_BASE}/${name}.json`);
-    if (!response.ok) throw new Error(`Failed to load ${name} data`);
-    return response.json();
-  }
+  const url = new URL(`${API_BASE}${endpoint}`, window.location.origin);
 
-  // In development, use the Express API
-  const url = new URL(endpoint, window.location.origin);
-  url.pathname = `${API_BASE}${endpoint}`;
+  // If API_BASE is an absolute URL (Render), use it directly
+  const isAbsolute = API_BASE.startsWith('http');
+  const fetchUrl = isAbsolute
+    ? new URL(`${API_BASE}${endpoint}`)
+    : url;
+
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
-      url.searchParams.set(key, value);
+      fetchUrl.searchParams.set(key, value);
     }
   });
 
-  const response = await fetch(url.pathname + url.search);
+  const response = await fetch(fetchUrl.toString());
   if (!response.ok) {
     throw new Error(`API error: ${response.status} ${response.statusText}`);
   }

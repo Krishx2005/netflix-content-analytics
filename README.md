@@ -30,18 +30,20 @@ This dashboard tells the story of Netflix's content strategy through seven narra
 | Backend | Node.js + Express | REST API serving chart data |
 | Database | SQLite (better-sqlite3) | Relational data with junction tables |
 | Data | 800-title synthetic dataset | Modeled after Netflix's content catalog |
+| Hosting | Vercel (frontend) + Render (backend) | Full-stack deployment |
 
 ## Architecture
 
 ```
 netflix-analytics-dashboard/
-├── server/                   # Express backend
+├── server/                   # Express backend (deployed to Render)
 │   ├── data/                 # CSV dataset
-│   ├── db/                   # SQLite database (generated)
+│   ├── db/                   # SQLite database (generated via seed)
 │   ├── routes/api.js         # 10 REST API endpoints
 │   ├── scripts/seed.js       # Database seeder
+│   ├── scripts/export-json.js # Static JSON exporter
 │   └── index.js              # Express server
-├── src/                      # React frontend
+├── src/                      # React frontend (deployed to Vercel)
 │   ├── components/
 │   │   ├── charts/           # 7 visualization components
 │   │   ├── layout/           # Navbar, Footer, ChapterHeader
@@ -49,6 +51,8 @@ netflix-analytics-dashboard/
 │   ├── hooks/                # useApi, useScrollReveal
 │   ├── services/api.js       # API client layer
 │   └── utils/formatters.js   # Color scales, formatting helpers
+├── render.yaml               # Render backend configuration
+├── .env.example              # Environment variable template
 ├── index.html
 ├── tailwind.config.js
 └── vite.config.js
@@ -72,6 +76,8 @@ Each chapter opens with a 1-2 sentence editorial insight above the visualization
 - **Heatmap** for seasonality: Two-dimensional patterns (month × year) are impossible to show in any other form
 - **Force-directed graph** for networks: Reveals clustering and collaboration patterns organically
 
+---
+
 ## Running Locally
 
 ### Prerequisites
@@ -81,21 +87,24 @@ Each chapter opens with a 1-2 sentence editorial insight above the visualization
 ### Setup
 
 ```bash
+# Clone the repo
+git clone https://github.com/Krishx2005/netflix-content-analytics.git
+cd netflix-content-analytics
+
 # Install dependencies
 npm install
+
+# Copy environment template
+cp .env.example .env
 
 # Seed the database from CSV
 npm run seed
 
-# Start the backend API (port 3001)
-npm run server
-
-# In another terminal, start the frontend (port 5173)
-npm run dev
-
-# Or run both simultaneously
+# Start both backend (port 3001) and frontend (port 5173)
 npm run dev:all
 ```
+
+Open `http://localhost:5173` in your browser.
 
 ### API Endpoints
 
@@ -112,6 +121,68 @@ npm run dev:all
 | `GET /api/network` | Actor/director collaboration graph |
 | `GET /api/filters` | Available filter values |
 
+---
+
+## Deployment
+
+### Backend → Render
+
+1. Go to [render.com](https://render.com) and connect your GitHub repo
+2. Render will auto-detect `render.yaml` and configure the service
+3. Alternatively, create a **Web Service** manually with these settings:
+
+| Setting | Value |
+|---------|-------|
+| **Runtime** | Node |
+| **Build Command** | `npm install && npm run seed` |
+| **Start Command** | `node server/index.js` |
+| **Plan** | Free |
+
+4. Set these **environment variables** in the Render dashboard:
+
+| Variable | Value |
+|----------|-------|
+| `NODE_ENV` | `production` |
+| `CORS_ORIGIN` | Your Vercel frontend URL (e.g. `https://netflix-content-analytics.vercel.app`) |
+
+5. After deploying, note the Render URL (e.g. `https://netflix-analytics-api.onrender.com`)
+
+### Frontend → Vercel
+
+1. Go to [vercel.com](https://vercel.com) and import the same GitHub repo
+2. Configure these settings:
+
+| Setting | Value |
+|---------|-------|
+| **Framework Preset** | Vite |
+| **Build Command** | `npm run build:local` |
+| **Output Directory** | `dist` |
+
+3. Set this **environment variable** in the Vercel dashboard:
+
+| Variable | Value |
+|----------|-------|
+| `VITE_API_URL` | Your Render backend URL (e.g. `https://netflix-analytics-api.onrender.com`) |
+
+4. Deploy. The frontend will call your Render backend for all chart data.
+
+### After Both Are Deployed
+
+Go back to **Render** and update the `CORS_ORIGIN` variable to your actual Vercel URL so the backend allows requests from your frontend.
+
+---
+
+## Environment Variables Summary
+
+| Variable | Where | Purpose |
+|----------|-------|---------|
+| `VITE_API_URL` | **Vercel** | Render backend URL so the frontend knows where to fetch data |
+| `CORS_ORIGIN` | **Render** | Vercel frontend URL so the backend allows cross-origin requests |
+| `NODE_ENV` | **Render** | Set to `production` |
+| `PORT` | **Render** | Set automatically by Render — do not set manually |
+
+---
+
 ## Built By
 
-**Krish Patel** — [GitHub](https://github.com/krishpatel)
+**Krish Patel** — [GitHub](https://github.com/Krishx2005)

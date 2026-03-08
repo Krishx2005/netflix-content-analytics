@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: netflix-analytics-api
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run seed
+    startCommand: node server/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGIN
+        sync: false  # Set manually in Render dashboard

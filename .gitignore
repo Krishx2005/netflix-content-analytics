@@ -7,7 +7,11 @@ build/
 
 # Environment & secrets
 .env
-.env.*
+.env.local
+.env.production
+.env.*.local
+# Keep .env.example tracked (it has no secrets)
+!.env.example
 
 # Database (generated from seed)
 server/db/*.db
@@ -24,8 +28,16 @@ Thumbs.db
 *.swp
 *.swo
 
+# Python (in case any tooling generates these)
+__pycache__/
+*.pyc
+
 # Logs & cache
 *.log
+npm-debug.log*
 .cache/
 .parcel-cache/
 .vite/
+
+# Vercel
+.vercel/
