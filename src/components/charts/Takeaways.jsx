@@ -86,7 +86,7 @@ export default function Takeaways() {
         ))}
       </div>
 
-      {/* Closing statement */}
+
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}

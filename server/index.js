@@ -5,24 +5,21 @@ import apiRouter from './routes/api.js';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
 const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',')
   : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (curl, mobile apps, etc.)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(null, true); // Permissive for now — tighten in production if needed
+      callback(null, true);
     }
   }
 }));
 app.use(express.json());
 
-// Request logging
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
@@ -32,15 +29,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// API routes
 app.use('/api', apiRouter);
 
-// Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err.message);
   console.error(err.stack);

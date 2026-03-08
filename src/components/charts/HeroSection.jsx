@@ -10,12 +10,12 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
-      {/* Background gradient */}
+
       <div className="absolute inset-0 bg-gradient-to-b from-netflix-red/10 via-netflix-black to-netflix-black" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-netflix-red/5 rounded-full blur-[120px]" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
-        {/* Overline */}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -27,7 +27,7 @@ export default function HeroSection() {
           </span>
         </motion.div>
 
-        {/* Main headline */}
+
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -40,7 +40,7 @@ export default function HeroSection() {
           One Data Story.
         </motion.h1>
 
-        {/* Subtitle */}
+
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -51,7 +51,7 @@ export default function HeroSection() {
           where it comes from, and what it reveals about the platform's global strategy.
         </motion.p>
 
-        {/* Stats row */}
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -74,7 +74,7 @@ export default function HeroSection() {
           ) : null}
         </motion.div>
 
-        {/* Scroll indicator */}
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

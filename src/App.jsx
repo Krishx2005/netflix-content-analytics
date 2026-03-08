@@ -40,39 +40,32 @@ export default function App() {
       />
 
       <main>
-        {/* Chapter 1: Hero */}
         <section id="hero">
           <HeroSection />
         </section>
 
-        {/* Chapter 2: Growth */}
         <section id="growth" className="py-8">
           <GrowthChart filters={activeFilters} />
         </section>
 
-        {/* Chapter 3: Geography */}
         <section id="geography" className="py-8">
           <WorldMap />
         </section>
 
-        {/* Chapter 4: Genre */}
         <section id="genre" className="py-8">
           <GenreDonut filters={activeFilters} />
         </section>
 
-        {/* Chapter 5: Ratings */}
         <section id="ratings" className="py-8">
           <RatingChart filters={activeFilters} />
         </section>
 
-        {/* Chapter 6: People */}
         <section id="people" className="py-8">
           <PeopleChart filters={activeFilters} />
           <HeatmapChart />
           <NetworkGraph />
         </section>
 
-        {/* Chapter 7: Takeaways */}
         <section id="takeaways" className="py-8">
           <Takeaways />
         </section>

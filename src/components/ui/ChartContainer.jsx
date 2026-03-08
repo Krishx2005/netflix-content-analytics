@@ -24,7 +24,7 @@ export default function ChartContainer({
       className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
     >
       <div className="bg-netflix-card/50 backdrop-blur-sm rounded-2xl border border-white/5 p-6 sm:p-8">
-        {/* Header */}
+
         <div className="mb-6">
           {chapter && (
             <span className="text-netflix-red font-mono text-xs tracking-widest uppercase mb-2 block">
@@ -43,7 +43,7 @@ export default function ChartContainer({
           )}
         </div>
 
-        {/* Content */}
+
         {loading ? (
           <LoadingSkeleton variant="chart" />
         ) : error ? (

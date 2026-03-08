@@ -207,7 +207,6 @@ router.get('/heatmap', (req, res) => {
 
 // ─── GET /api/network ────────────────────────────────────────────────────────
 router.get('/network', (req, res) => {
-  // Get actors who appear in 3+ titles
   const frequentActors = db.prepare(`
     SELECT a.id, a.name, COUNT(DISTINCT tc.title_id) as count
     FROM actors a
@@ -216,7 +215,6 @@ router.get('/network', (req, res) => {
     HAVING count >= 3
   `).all();
 
-  // Get directors who appear in 3+ titles
   const frequentDirectors = db.prepare(`
     SELECT director as name, COUNT(*) as count
     FROM titles
@@ -228,22 +226,18 @@ router.get('/network', (req, res) => {
   const nodes = [];
   const nodeMap = new Map();
 
-  // Add actor nodes
   for (const actor of frequentActors) {
     const nodeId = `actor-${actor.id}`;
     nodes.push({ id: nodeId, name: actor.name, type: 'actor', count: actor.count });
     nodeMap.set(actor.name, nodeId);
   }
 
-  // Add director nodes
   for (const dir of frequentDirectors) {
     const nodeId = `director-${dir.name}`;
     nodes.push({ id: nodeId, name: dir.name, type: 'director', count: dir.count });
     nodeMap.set(`dir:${dir.name}`, nodeId);
   }
 
-  // Build actor co-appearance links
-  // Get titles for frequent actors
   const actorTitles = db.prepare(`
     SELECT tc.title_id, a.name
     FROM title_cast tc
@@ -251,14 +245,12 @@ router.get('/network', (req, res) => {
     WHERE a.id IN (${frequentActors.map(() => '?').join(',')})
   `).all(...frequentActors.map(a => a.id));
 
-  // Group by title
   const titleToActors = new Map();
   for (const row of actorTitles) {
     if (!titleToActors.has(row.title_id)) titleToActors.set(row.title_id, []);
     titleToActors.get(row.title_id).push(row.name);
   }
 
-  // Count co-appearances
   const linkMap = new Map();
   const getTitleName = db.prepare('SELECT title FROM titles WHERE id = ?');
 
@@ -278,7 +270,6 @@ router.get('/network', (req, res) => {
     }
   }
 
-  // Also link directors to their frequent actors
   for (const dir of frequentDirectors) {
     const dirTitles = db.prepare(`
       SELECT t.id, t.title FROM titles t WHERE t.director = ?
@@ -301,7 +292,7 @@ router.get('/network', (req, res) => {
     }
   }
 
-  // Convert links, only keep weight >= 2 for actor-actor, >= 1 for director-actor
+  // weight >= 2 for actor-actor, >= 1 for director-actor
   const links = [];
   for (const [key, link] of linkMap) {
     if (link.dirName) {
@@ -321,11 +312,9 @@ router.get('/network', (req, res) => {
     }
   }
 
-  // Sort links by weight desc, limit to top 100
   links.sort((a, b) => b.weight - a.weight);
   const topLinks = links.slice(0, 100);
 
-  // Only include nodes that appear in links
   const usedNodeIds = new Set();
   for (const link of topLinks) {
     usedNodeIds.add(link.source);

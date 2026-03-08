@@ -18,7 +18,6 @@ export default function StatCard({ value, label, delay = 0, suffix = '' }) {
     const timer = setInterval(() => {
       current += 1;
       const progress = current / steps;
-      // Ease-out curve
       const eased = 1 - Math.pow(1 - progress, 3);
       setDisplayValue(Math.round(value * eased));
 

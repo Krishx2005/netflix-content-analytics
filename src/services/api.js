@@ -1,5 +1,3 @@
-// Use VITE_API_URL if set (production pointing to Render backend),
-// otherwise fall back to local proxy in development.
 const API_BASE = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL}/api`
   : '/api';
@@ -7,19 +5,13 @@ const API_BASE = import.meta.env.VITE_API_URL
 async function fetchApi(endpoint, params = {}) {
   const url = new URL(`${API_BASE}${endpoint}`, window.location.origin);
 
-  // If API_BASE is an absolute URL (Render), use it directly
-  const isAbsolute = API_BASE.startsWith('http');
-  const fetchUrl = isAbsolute
-    ? new URL(`${API_BASE}${endpoint}`)
-    : url;
-
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
-      fetchUrl.searchParams.set(key, value);
+      url.searchParams.set(key, value);
     }
   });
 
-  const response = await fetch(fetchUrl.toString());
+  const response = await fetch(url.toString());
   if (!response.ok) {
     throw new Error(`API error: ${response.status} ${response.statusText}`);
   }
