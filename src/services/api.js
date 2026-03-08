@@ -1,8 +1,19 @@
-const BASE_URL = '/api';
+const IS_PROD = import.meta.env.PROD;
+const API_BASE = '/api';
+const DATA_BASE = '/data';
 
 async function fetchApi(endpoint, params = {}) {
+  if (IS_PROD) {
+    // In production, fetch pre-built static JSON
+    const name = endpoint.replace('/', '');
+    const response = await fetch(`${DATA_BASE}/${name}.json`);
+    if (!response.ok) throw new Error(`Failed to load ${name} data`);
+    return response.json();
+  }
+
+  // In development, use the Express API
   const url = new URL(endpoint, window.location.origin);
-  url.pathname = `${BASE_URL}${endpoint}`;
+  url.pathname = `${API_BASE}${endpoint}`;
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
       url.searchParams.set(key, value);

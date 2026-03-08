@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run seed && node server/scripts/export-json.js && vite build",
+    "build:local": "vite build",
     "preview": "vite preview",
     "server": "node server/index.js",
     "seed": "node server/scripts/seed.js",
