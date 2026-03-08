@@ -1,5 +1,31 @@
-node_modules
-dist
-server/db/netflix.db
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Environment & secrets
 .env
+.env.*
+
+# Database (generated from seed)
+server/db/*.db
+server/db/*.db-wal
+server/db/*.db-shm
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs & cache
+*.log
+.cache/
+.parcel-cache/
+.vite/
